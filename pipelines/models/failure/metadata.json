@@ -1,0 +1,11 @@
+{
+    "model_type": "XGBoostClassifier",
+    "task": "Equipment Failure Prediction",
+    "threshold": 0.22046171,
+    "metric": "PR-AUC",
+    "pr_auc": 0.2627,
+    "training_samples": 932,
+    "positive_rate": 0.09120171673819742,
+    "date_trained": "2026-01-17",
+    "author": "Oil & Gas AI Pipeline"
+}

@@ -1,0 +1,21 @@
+{
+    "features": [
+        "pressure_gas_lift",
+        "pressure_production_casing",
+        "pressure_toptubing",
+        "flow_gaslift",
+        "temp_toptubing",
+        "temp_downholegauge",
+        "temp_checkproduction",
+        "valvestatus_dhsv",
+        "valvestatus_master1",
+        "valvestatus_master2",
+        "valvestatus_xmastree",
+        "valvestatus_shutdowngaslift",
+        "mtbf_days",
+        "mttr_days",
+        "failure_rate_per_year_expected",
+        "availability_pct"
+    ],
+    "target": "failure"
+}

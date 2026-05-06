@@ -1,0 +1,35 @@
+{
+  "trained_at": "2026-05-06T03:14:21.214106",
+  "eia_source": "EIA API v2 \u2014 PET.RWTC.W (WTI Weekly)",
+  "fred_source": "FRED \u2014 CPIAUCSL, DTWEXBGS",
+  "models": [
+    "xgboost",
+    "lightgbm",
+    "ridge",
+    "scaler",
+    "features"
+  ],
+  "feature_count": 28,
+  "metrics": {
+    "xgboost": {
+      "rmse": 4.8741,
+      "mae": 3.8436,
+      "r2": 0.3274
+    },
+    "lightgbm": {
+      "rmse": 4.6046,
+      "mae": 3.6031,
+      "r2": 0.3997
+    },
+    "ridge": {
+      "rmse": 4.1272,
+      "mae": 3.3468,
+      "r2": 0.5177
+    },
+    "ensemble": {
+      "rmse": 4.385,
+      "mae": 3.465,
+      "r2": 0.4556
+    }
+  }
+}

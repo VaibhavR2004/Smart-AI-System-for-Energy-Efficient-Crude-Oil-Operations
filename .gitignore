@@ -1,0 +1,76 @@
+# =========================
+# Python Cache Files
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest Cache
+.pytest_cache/
+
+# =========================
+# Virtual Environment
+# =========================
+myenv/
+venv/
+env/
+
+# =========================
+# VS Code Settings
+# =========================
+.vscode/
+
+# =========================
+# Jupyter Notebook Cache
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Data Folder (DO NOT PUSH)
+# =========================
+data/
+
+# =========================
+# Output Files
+# =========================
+output/
+*.csv
+*.xlsx
+
+# =========================
+# System Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Ignore Temporary Files
+# =========================
+*.tmp
+*.temp
+
+# =========================
+# Keep ML Models
+# =========================
+!models/
+!models/*.pkl
+!models/*.joblib
+!models/*.h5
+!models/*.pt
+!models/*.json
+
+# =========================
+# Keep Important Reports/Images
+# =========================
+!report/
+!images/
