@@ -39,7 +39,7 @@ from scipy.spatial import KDTree
 # Constants
 # ---------------------------------------------------------------------------
 
-DATA_DIR = Path(__file__).parent / "data" / "clusters"
+DATA_DIR = Path(__file__).parent.parent / "data" / "clusters"
 
 REGION_FILES: dict[str, str] = {
     "canada":       "CANADA_wells.geojson",
@@ -69,11 +69,6 @@ def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 # ---------------------------------------------------------------------------
 
 def _load_geojson(path: Path) -> list[dict]:
-    """
-    Parse a GeoJSON FeatureCollection.
-    Returns list of dicts: {name, lat, lon, type}.
-    Filters to Point features only (skips LineStrings / MultiLineStrings).
-    """
     with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
 
@@ -87,13 +82,32 @@ def _load_geojson(path: Path) -> list[dict]:
         coords = geom.get("coordinates", [])
         if len(coords) < 2:
             continue
+
         lon, lat = float(coords[0]), float(coords[1])
         props = feat.get("properties") or {}
+
+        # ── Fix 1: use FAC_NAME as the name ──────────────────────
+        name = (props.get("FAC_NAME") or props.get("name") or
+                props.get("NAME") or props.get("OPERATOR") or "Unknown")
+
+        # ── Fix 2: derive type from CATEGORY / FAC_STATUS ────────
+        category = (props.get("CATEGORY") or "").upper()
+        fac_type = (props.get("FAC_TYPE") or "").upper()
+        ogim_status = (props.get("OGIM_STATUS") or "").upper()
+
+        if "REFIN" in category or "REFIN" in fac_type:
+            point_type = "refinery"
+        elif "ACTIVE" == ogim_status:
+            point_type = "active_well"
+        else:
+            point_type = "well"
+
         points.append({
-            "name": props.get("name") or props.get("NAME") or "Unknown",
-            "lat":  lat,
-            "lon":  lon,
-            "type": (props.get("type") or props.get("TYPE") or "refinery").lower(),
+            "name":   name,
+            "lat":    lat,
+            "lon":    lon,
+            "type":   point_type,
+            "status": ogim_status,
         })
 
     return points
@@ -161,16 +175,7 @@ class RegionTransportModel:
     # Nearest refinery lookup
     # ------------------------------------------------------------------
 
-    def nearest_refinery(
-        self,
-        lat: float,
-        lon: float,
-        n_candidates: int = 5,
-    ) -> dict:
-        """
-        Return the nearest refinery (type == 'refinery') to (lat, lon).
-        Falls back to any nearest point if no explicit refineries found.
-        """
+    def nearest_refinery(self, lat, lon, n_candidates=5):
         query_rad = np.radians([lat, lon])
         actual_k = min(n_candidates * 3, len(self.points))
         _, idxs = self._kdtree.query(query_rad, k=actual_k)
@@ -180,9 +185,16 @@ class RegionTransportModel:
         else:
             idxs = idxs.tolist()
 
-        # Prefer labelled refineries
+        # Try refineries first, then active wells, then anything
         refinery_candidates = [i for i in idxs if self.points[i]["type"] == "refinery"]
-        candidates = refinery_candidates if refinery_candidates else idxs
+        active_candidates   = [i for i in idxs if self.points[i]["status"] == "ACTIVE"]
+
+        if refinery_candidates:
+            candidates = refinery_candidates
+        elif active_candidates:
+            candidates = active_candidates
+        else:
+            candidates = idxs  # use all — at least route somewhere
 
         best_idx = min(
             candidates,
@@ -192,12 +204,12 @@ class RegionTransportModel:
         dist_km = haversine_km(lat, lon, best["lat"], best["lon"])
 
         return {
-            "index":    best_idx,
-            "name":     best["name"],
-            "lat":      best["lat"],
-            "lon":      best["lon"],
-            "dist_km":  round(dist_km, 2),
-            "region":   self.region_name,
+            "index":   best_idx,
+            "name":    best["name"],
+            "lat":     best["lat"],
+            "lon":     best["lon"],
+            "dist_km": round(dist_km, 2),
+            "region":  self.region_name,
         }
 
     # ------------------------------------------------------------------
@@ -227,34 +239,86 @@ class RegionTransportModel:
             result = self.nearest_refinery(src_lat, src_lon)
             dst_idx = result["index"]
 
+        # ── FIX 1: if src and dst are the same node, find next nearest ──
         if src_idx == dst_idx:
-            p = self.points[src_idx]
-            return {
-                "route": [{"lat": p["lat"], "lon": p["lon"], "name": p["name"]}],
-                "total_graph_km": 0.0,
-                "direct_km": 0.0,
-                "hops": 0,
-            }
-
-        # Check connectivity and attempt Dijkstra
-        try:
-            if nx.has_path(self.graph, src_idx, dst_idx):
-                path_nodes = nx.dijkstra_path(self.graph, src_idx, dst_idx, weight="weight")
-                total_km = nx.dijkstra_path_length(self.graph, src_idx, dst_idx, weight="weight")
+            k_search = min(20, len(self.points))
+            _, candidates = self._kdtree.query(query_rad, k=k_search)
+            if np.isscalar(candidates):
+                candidates = [int(candidates)]
             else:
-                # Nodes not connected — fallback: direct line
+                candidates = candidates.tolist()
+
+            # Pick nearest candidate that is not the same node
+            # and is preferably an active/refinery type
+            for c in candidates:
+                c = int(c)
+                if c != src_idx:
+                    dst_idx = c
+                    break
+
+            # If still same (only 1 point exists), return early
+            if src_idx == dst_idx:
+                p = self.points[src_idx]
+                return {
+                    "route": [{"lat": p["lat"], "lon": p["lon"], "name": p["name"]}],
+                    "total_graph_km": 0.0,
+                    "direct_km": 0.0,
+                    "hops": 0,
+                }
+
+        # ── FIX 2: ensure both nodes exist in the graph ─────────────────
+        if src_idx not in self.graph or dst_idx not in self.graph:
+            # Add missing nodes temporarily with direct connection
+            direct = haversine_km(
+                self.points[src_idx]["lat"], self.points[src_idx]["lon"],
+                self.points[dst_idx]["lat"], self.points[dst_idx]["lon"],
+            )
+            path_nodes = [src_idx, dst_idx]
+            total_km = direct
+        else:
+            # ── FIX 3: Dijkstra with connectivity check ──────────────────
+            try:
+                if nx.has_path(self.graph, src_idx, dst_idx):
+                    path_nodes = nx.dijkstra_path(self.graph, src_idx, dst_idx, weight="weight")
+                    total_km = nx.dijkstra_path_length(self.graph, src_idx, dst_idx, weight="weight")
+                else:
+                    # ── FIX 4: not connected — find bridge via closest    
+                    # connected node to dst, then route src → bridge → dst  
+                    src_component = nx.node_connected_component(self.graph, src_idx)
+                    
+                    # Find node in src_component closest to dst
+                    bridge_idx = min(
+                        src_component,
+                        key=lambda n: haversine_km(
+                            self.points[n]["lat"], self.points[n]["lon"],
+                            self.points[dst_idx]["lat"], self.points[dst_idx]["lon"],
+                        )
+                    )
+                    
+                    # Route src → bridge, then direct bridge → dst
+                    if nx.has_path(self.graph, src_idx, bridge_idx):
+                        bridge_path = nx.dijkstra_path(self.graph, src_idx, bridge_idx, weight="weight")
+                        bridge_km   = nx.dijkstra_path_length(self.graph, src_idx, bridge_idx, weight="weight")
+                    else:
+                        bridge_path = [src_idx]
+                        bridge_km   = 0.0
+
+                    last_bridge_km = haversine_km(
+                        self.points[bridge_idx]["lat"], self.points[bridge_idx]["lon"],
+                        self.points[dst_idx]["lat"],    self.points[dst_idx]["lon"],
+                    )
+
+                    path_nodes = bridge_path + [dst_idx]
+                    total_km   = bridge_km + last_bridge_km
+
+            except nx.NetworkXNoPath:
                 path_nodes = [src_idx, dst_idx]
                 total_km = haversine_km(
                     self.points[src_idx]["lat"], self.points[src_idx]["lon"],
                     self.points[dst_idx]["lat"], self.points[dst_idx]["lon"],
                 )
-        except nx.NetworkXNoPath:
-            path_nodes = [src_idx, dst_idx]
-            total_km = haversine_km(
-                self.points[src_idx]["lat"], self.points[src_idx]["lon"],
-                self.points[dst_idx]["lat"], self.points[dst_idx]["lon"],
-            )
 
+        # ── Build waypoint list ──────────────────────────────────────────
         route = [
             {
                 "lat":  self.points[n]["lat"],
@@ -264,13 +328,16 @@ class RegionTransportModel:
             for n in path_nodes
         ]
 
-        direct_km = haversine_km(src_lat, src_lon, self.points[dst_idx]["lat"], self.points[dst_idx]["lon"])
+        direct_km = haversine_km(
+            src_lat, src_lon,
+            self.points[dst_idx]["lat"], self.points[dst_idx]["lon"],
+        )
 
         return {
-            "route":            route,
-            "total_graph_km":   round(total_km, 2),
-            "direct_km":        round(direct_km, 2),
-            "hops":             len(path_nodes) - 1,
+            "route":          route,
+            "total_graph_km": round(total_km, 2),
+            "direct_km":      round(direct_km, 2),
+            "hops":           len(path_nodes) - 1,
         }
 
 
@@ -295,17 +362,19 @@ class TransportModelManager:
 
     def _resolve_region(self, lat: float, lon: float) -> str:
         """Geo-fence heuristic to auto-detect region from coordinates."""
-        if 5.0 <= lat <= 83.0 and -142.0 <= lon <= -52.0:
-            # Rough North America bounding box
-            if lat >= 49.0:
-                return "canada"
-            elif lat <= 32.0 and lon <= -86.0:
-                return "mexico"
-            else:
-                return "usa"
-        elif 12.0 <= lat <= 38.0 and 34.0 <= lon <= 60.0:
+        # Canada
+        if lat >= 49.0 and lat <= 83.0 and lon >= -141.0 and lon <= -52.0:
+            return "canada"
+        # Mexico
+        if lat >= 14.0 and lat <= 32.5 and lon >= -118.0 and lon <= -86.0:
+            return "mexico"
+        # USA (continental)
+        if lat >= 24.0 and lat <= 49.0 and lon >= -125.0 and lon <= -66.0:
+            return "usa"
+        # Saudi Arabia
+        if lat >= 12.0 and lat <= 38.0 and lon >= 34.0 and lon <= 60.0:
             return "saudi_arabia"
-        # fallback — load all regions and pick globally nearest
+        # Everything else — load all regions and pick globally nearest
         return "all"
 
     def _load_region(self, region: str) -> RegionTransportModel:

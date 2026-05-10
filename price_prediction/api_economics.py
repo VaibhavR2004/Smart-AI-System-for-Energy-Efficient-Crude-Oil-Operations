@@ -20,8 +20,11 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional
 
-from predictor import predict_price, optimize_cost, get_current_wti_price
-
+from price_prediction.predictor import (
+    predict_price,
+    optimize_cost,
+    get_current_wti_price
+)
 router = APIRouter(tags=["Economics — Price & Cost"])
 
 EIA_API_KEY = os.getenv("EIA_API_KEY", "DEMO_KEY")

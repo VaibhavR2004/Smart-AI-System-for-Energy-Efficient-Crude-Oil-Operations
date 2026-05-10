@@ -1,0 +1,17 @@
+{
+"type": "FeatureCollection",
+"name": "india_wells1",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "COUNTRY": "AFGHANISTAN", "STATE_PROV": "N/A", "OGIM_ID": "OGIM_2531933" }, "geometry": { "type": "Point", "coordinates": [ 68.68066, 36.25928 ] } },
+{ "type": "Feature", "properties": { "COUNTRY": "AFGHANISTAN", "STATE_PROV": "N/A", "OGIM_ID": "OGIM_2532308" }, "geometry": { "type": "Point", "coordinates": [ 68.68066, 36.25928 ] } },
+{ "type": "Feature", "properties": { "COUNTRY": "AFGHANISTAN", "STATE_PROV": "N/A", "OGIM_ID": "OGIM_2532217" }, "geometry": { "type": "Point", "coordinates": [ 69.14256, 36.74997 ] } },
+{ "type": "Feature", "properties": { "COUNTRY": "AFGHANISTAN", "STATE_PROV": "N/A", "OGIM_ID": "OGIM_2532113" }, "geometry": { "type": "Point", "coordinates": [ 69.14256, 36.74997 ] } },
+{ "type": "Feature", "properties": { "COUNTRY": "AFGHANISTAN", "STATE_PROV": "N/A", "OGIM_ID": "OGIM_2532218" }, "geometry": { "type": "Point", "coordinates": [ 69.14256, 36.74997 ] } },
+{ "type": "Feature", "properties": { "COUNTRY": "AFGHANISTAN", "STATE_PROV": "N/A", "OGIM_ID": "OGIM_2532216" }, "geometry": { "type": "Point", "coordinates": [ 69.15214, 36.75758 ] } },
+{ "type": "Feature", "properties": { "COUNTRY": "AFGHANISTAN", "STATE_PROV": "N/A", "OGIM_ID": "OGIM_2532488" }, "geometry": { "type": "Point", "coordinates": [ 69.14256, 36.74997 ] } },
+{ "type": "Feature", "properties": { "COUNTRY": "AFGHANISTAN", "STATE_PROV": "N/A", "OGIM_ID": "OGIM_2532591" }, "geometry": { "type": "Point", "coordinates": [ 69.15214, 36.75758 ] } },
+{ "type": "Feature", "properties": { "COUNTRY": "AFGHANISTAN", "STATE_PROV": "N/A", "OGIM_ID": "OGIM_2532592" }, "geometry": { "type": "Point", "coordinates": [ 69.14256, 36.74997 ] } },
+{ "type": "Feature", "properties": { "COUNTRY": "AFGHANISTAN", "STATE_PROV": "N/A", "OGIM_ID": "OGIM_2532593" }, "geometry": { "type": "Point", "coordinates": [ 69.14256, 36.74997 ] } }
+]
+}

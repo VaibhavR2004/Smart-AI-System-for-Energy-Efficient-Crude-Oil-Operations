@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_7c8aeef50bef455e51beaf98f832a9fc {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-ant-path@1.1.2/dist/leaflet-ant-path.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+</head>
+<body>
+    
+    
+    <div style="
+        position: fixed; top: 12px; right: 12px; z-index: 9999;
+        background: rgba(13,17,23,0.92);
+        border: 1px solid #FF6B00;
+        border-radius: 10px;
+        padding: 14px 18px;
+        font-family: 'Courier New', monospace;
+        color: #e0e0e0;
+        min-width: 240px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+    ">
+      <div style="font-size:13px; color:#FF6B00; font-weight:bold; margin-bottom:8px;">
+        ⛽ OIL &amp; GAS — TRANSPORT MODEL
+      </div>
+      <table style="font-size:12px; border-collapse:collapse; width:100%">
+        <tr><td style="color:#888; padding:2px 0">Region</td>
+            <td style="text-align:right">Mexico</td></tr>
+        <tr><td style="color:#888; padding:2px 0">Refinery</td>
+            <td style="text-align:right; max-width:140px; overflow:hidden; text-overflow:ellipsis">GOLIAT-1EXP</td></tr>
+        <tr><td style="color:#888; padding:2px 0">Direct dist.</td>
+            <td style="text-align:right; color:#00D4FF">422.75 km</td></tr>
+        <tr><td style="color:#888; padding:2px 0">Route dist.</td>
+            <td style="text-align:right; color:#FF6B00">108.61 km</td></tr>
+        <tr><td style="color:#888; padding:2px 0">Route hops</td>
+            <td style="text-align:right">3</td></tr>
+      </table>
+      <div style="margin-top:10px; font-size:10px; color:#555">
+        🔵 Query &nbsp; 🔴 Refinery &nbsp; 🟠 Route
+      </div>
+    </div>
+    
+    
+            <div class="folium-map" id="map_7c8aeef50bef455e51beaf98f832a9fc" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_7c8aeef50bef455e51beaf98f832a9fc = L.map(
+                "map_7c8aeef50bef455e51beaf98f832a9fc",
+                {
+                    center: [27.86721, -95.486045],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 5,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_7c8aeef50bef455e51beaf98f832a9fc);
+
+            
+
+        
+    
+            var tile_layer_317e99a808e920a8a867dfcdc2a3af58 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_317e99a808e920a8a867dfcdc2a3af58.addTo(map_7c8aeef50bef455e51beaf98f832a9fc);
+        
+    
+            var marker_2d50f36952f260c51619471a1b26e824 = L.marker(
+                [29.76, -95.37],
+                {
+}
+            ).addTo(map_7c8aeef50bef455e51beaf98f832a9fc);
+        
+    
+            var icon_4d5644969006170b06c27571109b2395 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "map-marker",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_84647d37d7035321bc985d9b89a0044d = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_9337d71334b9f624bb4003cd97745514 = $(`<div id="html_9337d71334b9f624bb4003cd97745514" style="width: 100.0%; height: 100.0%;"><b>📍 Query Location</b><br>Lat: 29.7600<br>Lon: -95.3700</div>`)[0];
+                popup_84647d37d7035321bc985d9b89a0044d.setContent(html_9337d71334b9f624bb4003cd97745514);
+            
+        
+
+        marker_2d50f36952f260c51619471a1b26e824.bindPopup(popup_84647d37d7035321bc985d9b89a0044d)
+        ;
+
+        
+    
+    
+            marker_2d50f36952f260c51619471a1b26e824.bindTooltip(
+                `<div>
+                     Your Location
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2d50f36952f260c51619471a1b26e824.setIcon(icon_4d5644969006170b06c27571109b2395);
+            
+    
+            var circle_marker_0a5513c0885cb04e4ed5d5b5c6331aca = L.circleMarker(
+                [29.76, -95.37],
+                {"bubblingMouseEvents": true, "color": "#00D4FF", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#00D4FF", "fillOpacity": 0.25, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14, "stroke": true, "weight": 2}
+            ).addTo(map_7c8aeef50bef455e51beaf98f832a9fc);
+        
+    
+            var marker_0415cebde2ef8c42bc74817a85e6be69 = L.marker(
+                [25.97442, -95.60209],
+                {
+}
+            ).addTo(map_7c8aeef50bef455e51beaf98f832a9fc);
+        
+    
+            var icon_132ff62c4cc39af2d1a5d3e4b151624c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "industry",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ebcfe7cb94029285d93021136aab7b66 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_4d5d3c2776f800cca98fd961a801aff9 = $(`<div id="html_4d5d3c2776f800cca98fd961a801aff9" style="width: 100.0%; height: 100.0%;"><b>🏭 GOLIAT-1EXP</b><br>Region: Mexico<br>Direct: <b>421.55 km</b><br>Route:  <b>108.61 km</b></div>`)[0];
+                popup_ebcfe7cb94029285d93021136aab7b66.setContent(html_4d5d3c2776f800cca98fd961a801aff9);
+            
+        
+
+        marker_0415cebde2ef8c42bc74817a85e6be69.bindPopup(popup_ebcfe7cb94029285d93021136aab7b66)
+        ;
+
+        
+    
+    
+            marker_0415cebde2ef8c42bc74817a85e6be69.bindTooltip(
+                `<div>
+                     🏭 GOLIAT-1EXP (421.55 km)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0415cebde2ef8c42bc74817a85e6be69.setIcon(icon_132ff62c4cc39af2d1a5d3e4b151624c);
+            
+    
+            var circle_marker_bce7057e1aa98716e896983324402839 = L.circleMarker(
+                [25.97442, -95.60209],
+                {"bubblingMouseEvents": true, "color": "#FF4D4D", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF4D4D", "fillOpacity": 0.25, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14, "stroke": true, "weight": 2}
+            ).addTo(map_7c8aeef50bef455e51beaf98f832a9fc);
+        
+    
+            ant_path_dc02e08269fac492f816ae2398fc1ece = L.polyline.antPath(
+              [[25.97442, -95.60209], [25.61236, -95.22421], [25.69821, -95.01508], [25.97096, -95.01623]],
+              {
+  "stroke": true,
+  "color": "#FF6B00",
+  "weight": 4,
+  "opacity": 0.9,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": [
+15,
+25,
+],
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "#FF6B00",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "smoothFactor": 1.0,
+  "noClip": false,
+  "paused": false,
+  "reverse": false,
+  "hardwareAcceleration": false,
+  "delay": 800,
+  "pulseColor": "#FFF",
+}
+        ).addTo(map_7c8aeef50bef455e51beaf98f832a9fc);
+        
+    
+            ant_path_dc02e08269fac492f816ae2398fc1ece.bindTooltip(
+                `<div>
+                     Pipeline route — 108.61 km (3 hops)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_5c2b0b56e39d79771e51413c330809b4 = L.polyline(
+                [[25.97442, -95.60209], [25.61236, -95.22421], [25.69821, -95.01508], [25.97096, -95.01623]],
+                {"bubblingMouseEvents": true, "color": "#FF6B00", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B00", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_7c8aeef50bef455e51beaf98f832a9fc);
+        
+    
+            var circle_marker_89ddadca1b08a2728f6734d86f0d9773 = L.circleMarker(
+                [25.61236, -95.22421],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFA500", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 1}
+            ).addTo(map_7c8aeef50bef455e51beaf98f832a9fc);
+        
+    
+            circle_marker_89ddadca1b08a2728f6734d86f0d9773.bindTooltip(
+                `<div>
+                     EXPLORATUS-101
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_93025d8620fe48d101d2e9c7cc7f8767 = L.circleMarker(
+                [25.69821, -95.01508],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFA500", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 1}
+            ).addTo(map_7c8aeef50bef455e51beaf98f832a9fc);
+        
+    
+            circle_marker_93025d8620fe48d101d2e9c7cc7f8767.bindTooltip(
+                `<div>
+                     MAXIMINO-1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_3a6ac197add710a33397d18bf1b3784f = L.polyline(
+                [[29.76, -95.37], [25.97442, -95.60209]],
+                {"bubblingMouseEvents": true, "color": "#888888", "dashArray": "8 6", "dashOffset": null, "fill": false, "fillColor": "#888888", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_7c8aeef50bef455e51beaf98f832a9fc);
+        
+    
+            poly_line_3a6ac197add710a33397d18bf1b3784f.bindTooltip(
+                `<div>
+                     Direct: 422.75 km
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var measure_control_533784d02e0b11e452145371bbb51913 = new L.Control.Measure(
+                {
+  "position": "bottomleft",
+  "primaryLengthUnit": "kilometers",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_7c8aeef50bef455e51beaf98f832a9fc.addControl(measure_control_533784d02e0b11e452145371bbb51913);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var tile_layer_fae703aa94d18956f579cd0c9911cdec = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e", "detect_retina": false, "max_native_zoom": 20, "max_zoom": 20, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abcd", "tms": false}
+            );
+            var mini_map_fc0d978ae01fcd196d4114246ff45895 = new L.Control.MiniMap(
+                tile_layer_fae703aa94d18956f579cd0c9911cdec,
+                {
+  "position": "bottomright",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -6,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": false,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_7c8aeef50bef455e51beaf98f832a9fc.addControl(mini_map_fc0d978ae01fcd196d4114246ff45895);
+        
+    
+            var layer_control_8c689718b850ee8de9b9d8480be109c4_layers = {
+                base_layers : {
+                    "cartodbdarkmatter" : tile_layer_317e99a808e920a8a867dfcdc2a3af58,
+                },
+                overlays :  {
+                },
+            };
+            let layer_control_8c689718b850ee8de9b9d8480be109c4 = L.control.layers(
+                layer_control_8c689718b850ee8de9b9d8480be109c4_layers.base_layers,
+                layer_control_8c689718b850ee8de9b9d8480be109c4_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_7c8aeef50bef455e51beaf98f832a9fc);
+
+        
+</script>
+</html>
